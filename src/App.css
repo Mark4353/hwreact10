@@ -16,6 +16,9 @@ input {
   border-radius: 4px;
   cursor: pointer;
 }
+.add-contact-button:hover {
+  background-color: #45a049;
+}
 .delete-button {
   background-color: #f44336;
   color: white;
@@ -23,6 +26,9 @@ input {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+.delete-button:hover {
+  background-color: #da190b;
 }
 li {
   display: flex;
