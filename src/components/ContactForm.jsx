@@ -1,56 +1,45 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
+import ContactsContext from "../contexts/ContactsContext";
 
-export default class ContactForm extends Component {
-  state = {
-    name: "",
-    number: "",
-  };
+export default function ContactForm() {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
+  const { addContact } = useContext(ContactsContext);
 
-  handleChange = (e) => {
-    const { name, value } = e.target;
-    this.setState({ [name]: value });
-  };
-
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const { name, number } = this.state;
-    const added = this.props.onAddContact({
-      name: name.trim(),
-      number: number.trim(),
-    });
+    const added = addContact({ name: name.trim(), number: number.trim() });
     if (added) {
-      this.setState({ name: "", number: "" });
+      setName("");
+      setNumber("");
     }
   };
 
-  render() {
-    const { name, number } = this.state;
-    return (
-      <form className="contact-form" onSubmit={this.handleSubmit}>
-        <label>
-          Name
-          <input
-            type="text"
-            name="name"
-            value={name}
-            onChange={this.handleChange}
-            required
-          />
-        </label>
-        <label>
-          Phone number
-          <input
-            type="tel"
-            name="number"
-            value={number}
-            onChange={this.handleChange}
-            required
-          />
-        </label>
-        <button type="submit" className="add-contact-button">
-          Add contact
-        </button>
-      </form>
-    );
-  }
+  return (
+    <form className="contact-form" onSubmit={handleSubmit}>
+      <label>
+        Name
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </label>
+      <label>
+        Phone number
+        <input
+          type="tel"
+          name="number"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          required
+        />
+      </label>
+      <button type="submit" className="add-contact-button">
+        Add contact
+      </button>
+    </form>
+  );
 }

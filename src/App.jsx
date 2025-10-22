@@ -1,31 +1,25 @@
-import React, { Component } from "react";
-import { nanoid } from "nanoid";
+import React, { useState, useEffect } from "react";
 import ContactForm from "./components/ContactForm";
 import ContactList from "./components/ContactList";
 import Filter from "./components/Filter";
+import ContactsContext from "./contexts/ContactsContext";
 import "./App.css";
 
-export default class App extends Component {
-  state = {
-    contacts: [],
-    filter: "",
-  };
+export default function App() {
+  const [contacts, setContacts] = useState(() => {
+    const saved = localStorage.getItem("contacts");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [filter, setFilter] = useState("");
 
-  componentDidMount() {
-    const savedContacts = localStorage.getItem("contacts");
-    if (savedContacts) {
-      this.setState({ contacts: JSON.parse(savedContacts) });
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
-    }
-  }
+  const genId = () =>
+    Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
 
-  addContact = ({ name, number }) => {
-    const { contacts } = this.state;
+  const addContact = ({ name, number }) => {
     const normalizedNew = name.toLowerCase();
     const duplicate = contacts.some(
       (c) => c.name.toLowerCase() === normalizedNew
@@ -35,39 +29,40 @@ export default class App extends Component {
       return false;
     }
 
-    const newContact = { id: nanoid(), name, number };
-    this.setState((prev) => ({ contacts: [newContact, ...prev.contacts] }));
+    const newContact = { id: genId(), name, number };
+    setContacts((prev) => [newContact, ...prev]);
     return true;
   };
 
-  deleteContact = (id) => {
-    this.setState((prev) => ({
-      contacts: prev.contacts.filter((c) => c.id !== id),
-    }));
+  const deleteContact = (id) => {
+    setContacts((prev) => prev.filter((c) => c.id !== id));
   };
 
-  handleFilterChange = (value) => {
-    this.setState({ filter: value });
+  const handleFilterChange = (value) => {
+    setFilter(value);
   };
 
-  getFilteredContacts() {
-    const { contacts, filter } = this.state;
-    const normalized = filter.toLowerCase();
-    return contacts.filter((c) => c.name.toLowerCase().includes(normalized));
-  }
+  const visibleContacts = contacts.filter((c) =>
+    c.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
-  render() {
-    const { filter } = this.state;
-    const visibleContacts = this.getFilteredContacts();
+  const contextValue = {
+    addContact,
+    deleteContact,
+    filter,
+    setFilter: handleFilterChange,
+    visibleContacts,
+  };
 
-    return (
+  return (
+    <ContactsContext.Provider value={contextValue}>
       <div className="app">
         <h1>Phonebook</h1>
-        <ContactForm onAddContact={this.addContact} />
+        <ContactForm />
         <h2>Contacts</h2>
-        <Filter value={filter} onChange={this.handleFilterChange} />
-        <ContactList contacts={visibleContacts} onDelete={this.deleteContact} />
+        <Filter />
+        <ContactList />
       </div>
-    );
-  }
+    </ContactsContext.Provider>
+  );
 }
