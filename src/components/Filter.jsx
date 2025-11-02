@@ -6,6 +6,7 @@ const Filter = () => {
 
   return (
     <div className="filter">
+      
       <label>
         Find contacts by name
         <input
@@ -20,3 +21,4 @@ const Filter = () => {
 };
 
 export default Filter;
+  
