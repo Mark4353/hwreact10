@@ -1,8 +1,15 @@
-import React, { useContext } from "react";
-import ContactsContext from "../contexts/ContactsContext";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { removeContact } from "../redux/contactsSlice";
 
 const ContactList = () => {
-  const { visibleContacts, deleteContact } = useContext(ContactsContext);
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => state.contacts);
+  const filter = useSelector((state) => state.filter);
+
+  const visibleContacts = contacts.filter((c) =>
+    c.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <ul className="contact-list">
@@ -11,7 +18,10 @@ const ContactList = () => {
           <span>
             {name}: {number}
           </span>
-          <button className="delete-button" onClick={() => deleteContact(id)}>
+          <button
+            className="delete-button"
+            onClick={() => dispatch(removeContact(id))}
+          >
             Delete
           </button>
         </li>
@@ -19,6 +29,5 @@ const ContactList = () => {
     </ul>
   );
 };
-
 
 export default ContactList;

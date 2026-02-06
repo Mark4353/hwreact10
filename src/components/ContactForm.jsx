@@ -1,18 +1,28 @@
-import React, { useState, useContext } from "react";
-import ContactsContext from "../contexts/ContactsContext";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addContact } from "../redux/contactsSlice";
 
 export default function ContactForm() {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
-  const { addContact } = useContext(ContactsContext);
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => state.contacts);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const added = addContact({ name: name.trim(), number: number.trim() });
-    if (added) {
-      setName("");
-      setNumber("");
+    const trimmedName = name.trim();
+    const trimmedNumber = number.trim();
+    const normalizedNew = trimmedName.toLowerCase();
+    const duplicate = contacts.some(
+      (c) => c.name.toLowerCase() === normalizedNew
+    );
+    if (duplicate) {
+      alert(`${trimmedName} вже у контактах.`);
+      return;
     }
+    dispatch(addContact({ name: trimmedName, number: trimmedNumber }));
+    setName("");
+    setNumber("");
   };
 
   return (
