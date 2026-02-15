@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { setFilter } from "../redux/filterSlice";
+import { setFilter } from "../redux/filterReducer";
 
 const Filter = () => {
   const dispatch = useDispatch();

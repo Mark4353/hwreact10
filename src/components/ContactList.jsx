@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeContact } from "../redux/contactsSlice";
+import { removeContact } from "../redux/contactsReducer";
 
 const ContactList = () => {
   const dispatch = useDispatch();
@@ -8,7 +8,7 @@ const ContactList = () => {
   const filter = useSelector((state) => state.filter);
 
   const visibleContacts = contacts.filter((c) =>
-    c.name.toLowerCase().includes(filter.toLowerCase())
+    c.name.toLowerCase().includes(filter.toLowerCase()),
   );
 
   return (
